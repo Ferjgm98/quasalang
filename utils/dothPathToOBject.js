@@ -1,5 +1,5 @@
 module.exports = function() {
-  this.dotPathToObject = function(pathStr, value) {
+  this.doPathToObjectString = function(pathStr, value) {
     const formattedData = pathStr
     .split('.')
     .reverse()
@@ -9,5 +9,15 @@ module.exports = function() {
     }, '');
 
       return formattedData;
+  }
+
+  this.doPathToObject = function(pathStr, value) {
+    const pathObject = pathStr
+    .split('.')
+    .reduceRight((acc, currentValue) => {
+      return { [currentValue]: acc }
+    }, value)
+
+      return pathObject;
   }
 }

@@ -1,4 +1,4 @@
-module.exports = function() { 
+module.exports = function() {
   this.getLanguagesAndCodesAsObjects = function(results) {
     // get first row that has data
     let firstRowWithData = {}

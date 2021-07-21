@@ -1,12 +1,15 @@
 const fs = require('fs')
 const rimraf = require('rimraf')
 const csv = require('csv-parser')
+const beauty = require('js-beautify');
 
 const { prompt } = require('inquirer');
 
 require('./lang-switcher.js')();
 require('../utils/getLanguagesAndCodesAsObjects.js')();
-require('../utils/dothPathToOBject.js')();
+require('../utils/dothPathToObject.js')();
+require('../utils/groupBy.js')();
+require('../utils/generateLinesRecursive.js')()
 
 module.exports = function() {
 
@@ -35,22 +38,22 @@ module.exports = function() {
         .pipe(csv())
         .on('data', (data) => results.push(data))
         .on('end', () => {
-      
           let languagesAndCodesAsObjects = getLanguagesAndCodesAsObjects(results)
-          
+
+          const groupedResults = groupBy(results, 'Key', false);
           // initialize main index file
           let mainIndexFile = ``
-      
+
           // add watermark
           if (!options.nowatermark) {
             mainIndexFile += `// ${watermark}\n\n`
           }
-      
+
           // generate main index file import statements
           languagesAndCodesAsObjects.forEach(langObj => {
             mainIndexFile += `import ${langObj.codeAsVariable} from './${langObj.code}'\n`
           });
-      
+
           // generate main index file export statement
           mainIndexFile += `\n`
           mainIndexFile += `export default { \n`
@@ -107,88 +110,64 @@ module.exports = function() {
               writeFiles()
             }
           }
-      
+
           // write files
           function writeFiles() {
             // write the output folder if it doesn't exist
             if (!fs.existsSync(options.output)){
               fs.mkdirSync(options.output, { recursive: true });
             }
-        
+
             // write the main index file
             fs.writeFile(`${options.output}/index.js`, mainIndexFile, function(err) {
               if(err) {
                 return console.log(err);
               }
-              filesWrittenMessage.push({ 
+              filesWrittenMessage.push({
                 'File': 'Main index file',
                 'Code': '',
                 'Path': `${options.output}/index.js`,
               })
-        
+
               // generate individual language folders and index.js files
               let languageFilesWritten = 0
               languagesAndCodesAsObjects.forEach(langObj => {
-          
+
                 // create language folder
                 if (!fs.existsSync(`${options.output}/${langObj.code}`)){
                   fs.mkdirSync(`${options.output}/${langObj.code}`);
                 }
-          
+
                 // generate language index file
                 let languageIndexFile = ``
-          
+
                 // add language comment to the top
                 languageIndexFile += `// ${langObj.lang}, ${langObj.code}`
-          
+
                 // add watermark
                 if (!options.nowatermark) {
                   languageIndexFile += `\n// ${watermark}`
                 }
-               
+
                 // add blank lines
                 languageIndexFile += `\n\n`
-          
+
                 // add opening export statement
                 languageIndexFile += `export default {\n`
-          
+
                 // add translations
-                results.forEach(result => {
-                  // row is not empty
-                  if (result.Key) {
-                    // add a comment if csv row is a comment
-                    if (result.Key.startsWith('#')) {
-                      languageIndexFile += `\t// ${result.Key.substring(1).trim()}\n`
-                    }
-                    // or just add the phrase key pair
-                    else {
-                      languageIndexFile += `\t`
-                      const blockKeyPair = dotPathToObject(result.Key, result[langObj.langAndCode]);
-                      let phraseKeyPair = blockKeyPair;
-                      // if no phrase provided, comment it out
-                      if (!result[langObj.langAndCode]) {
-                        phraseKeyPair = `// ${phraseKeyPair} // no phrase provided - fallback to default`
-                      }
-                      languageIndexFile += phraseKeyPair
-                      languageIndexFile += `\n`
-                    }
-                  }
-                  // row is empty, add a blank line
-                  else {
-                    languageIndexFile += `\n`
-                  }
-                });
-          
+                languageIndexFile += generateLinesRecursive(groupedResults, langObj.langAndCode);
+
                 // add closing brace
                 languageIndexFile += `}`
-          
+
                 // write the language index file
                 let languageIndexFilePath = `${options.output}/${langObj.code}/index.js`
-                fs.writeFile(`${languageIndexFilePath}`, languageIndexFile, function(err) {
+                fs.writeFile(`${languageIndexFilePath}`, beauty(languageIndexFile), function(err) {
                   if(err) {
                     return console.log(err);
                   }
-                  filesWrittenMessage.push({ 
+                  filesWrittenMessage.push({
                     'File': `${langObj.lang}`,
                     'Code': `${langObj.code}`,
                     'Path': `${languageIndexFilePath}`,
