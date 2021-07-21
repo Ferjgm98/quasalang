@@ -1,12 +1,12 @@
 const merge = require('deepmerge');
 
 module.exports = function() {
-    this.groupBy = groupBy = (
+    this.groupByAndMergeDeep = function(
         inputArray,
         key,
         removeKey = false,
         outputType = [],
-      ) => {
+      ) {
         return inputArray.reduce((previous, current) => {
             // Get the current value that matches the input key and remove the key value for it.
             const { [key]: keyValue } = current;

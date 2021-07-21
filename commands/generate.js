@@ -8,7 +8,7 @@ const { prompt } = require('inquirer');
 require('./lang-switcher.js')();
 require('../utils/getLanguagesAndCodesAsObjects.js')();
 require('../utils/assignObjectFromDotPath.js')();
-require('../utils/groupBy.js')();
+require('../utils/groupByAndMergeDeep.js')();
 require('../utils/generateLinesRecursive.js')()
 
 module.exports = function() {
@@ -40,7 +40,7 @@ module.exports = function() {
         .on('end', () => {
           let languagesAndCodesAsObjects = getLanguagesAndCodesAsObjects(results)
 
-          const groupedResults = groupBy(results, 'Key', false);
+          const groupedResults = groupByAndMergeDeep(results, 'Key', false);
           // initialize main index file
           let mainIndexFile = ``
 
