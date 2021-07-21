@@ -7,7 +7,7 @@ const { prompt } = require('inquirer');
 
 require('./lang-switcher.js')();
 require('../utils/getLanguagesAndCodesAsObjects.js')();
-require('../utils/dothPathToObject.js')();
+require('../utils/assignObjectFromDotPath.js')();
 require('../utils/groupBy.js')();
 require('../utils/generateLinesRecursive.js')()
 
