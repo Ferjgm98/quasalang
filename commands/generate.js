@@ -61,7 +61,7 @@ module.exports = function() {
             mainIndexFile += `\t'${langObj.code}': ${langObj.codeAsVariable}, // ${langObj.lang}\n`
           });
           mainIndexFile += `}`
-      
+
           // check if output folder exists & prompt to confirm
           if (fs.existsSync(options.output)) {
             if (!options.force) {
@@ -85,7 +85,7 @@ module.exports = function() {
           else {
             writeFiles()
           }
-  
+
           // delete the output folder if it exists
           function deleteOutputFolder() {
             if (fs.existsSync(options.output)) {
@@ -96,7 +96,7 @@ module.exports = function() {
                 //     console.error(`Error while deleting ${options.output}.`);
                 //     console.error(err)
                 // }
-                rimraf(options.output, function (err) { 
+                rimraf(options.output, function (err) {
                   if (err) {
                     console.error(`Error while deleting ${options.output}.`);
                     console.error(err)
@@ -177,16 +177,16 @@ module.exports = function() {
                     logWriteMessages()
                   }
                 })
-          
+
               });
             })
           }
-  
+
           // log write messages
           function logWriteMessages() {
             console.log(`\nWrote ${filesWrittenMessage.length} files:`)
             console.table(filesWrittenMessage)
-  
+
             if (options.langSwitcher) {
               console.log('')
               langSwitcher({ input: options.input })
@@ -194,7 +194,7 @@ module.exports = function() {
 
             setupWatcher()
           }
-      
+
         })
     }
 
@@ -212,7 +212,7 @@ module.exports = function() {
               readCSVAndWrite(options)
             })
           }
-          
+
         }, 500)
       }
     }

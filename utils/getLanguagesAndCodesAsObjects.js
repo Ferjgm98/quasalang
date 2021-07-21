@@ -14,10 +14,10 @@ module.exports = function() {
     let languagesAndCodes = Object.assign({}, firstRowWithData)
     delete languagesAndCodes['Key']
     languagesAndCodes = Object.keys(languagesAndCodes)
-    
+
     // generate array of lang, code & codeAsVariable as objects
     let languagesAndCodesAsObjects = []
-    
+
     languagesAndCodes.forEach(languageAndCode => {
       let langAndCode = languageAndCode
       let lang = languageAndCode.split(',')[0]
@@ -30,7 +30,7 @@ module.exports = function() {
         codeAsVariable
       }
       languagesAndCodesAsObjects.push(languagesAndCodesObject)
-      
+
     });
 
     return languagesAndCodesAsObjects
